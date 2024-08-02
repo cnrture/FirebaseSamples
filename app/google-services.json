@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "942459251648",
+    "project_id": "fir-samples-f3566",
+    "storage_bucket": "fir-samples-f3566.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:942459251648:android:2ddfdf033c9547cd8c7625",
+        "android_client_info": {
+          "package_name": "com.canerture.firebasesamples"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyA06BWQT0JDnRmIJn_qBBfZ_MNA4_fOVtc"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
