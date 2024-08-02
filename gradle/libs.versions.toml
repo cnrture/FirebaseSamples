@@ -39,6 +39,7 @@ hilt-navigation-compose = { group = "androidx.hilt", name = "hilt-navigation-com
 navigation-compose = { group = "androidx.navigation", name = "navigation-compose", version.ref = "navigation" }
 
 firebase-bom = { group = "com.google.firebase", name = "firebase-bom", version.ref = "firebase" }
+firebase-auth = { group = "com.google.firebase", name = "firebase-auth-ktx" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
