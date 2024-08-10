@@ -49,17 +49,3 @@ class MainViewModel @Inject constructor(
         _uiEffect.send(uiEffect)
     }
 }
-
-object MainContract {
-    data class UiState(
-        val isLoading: Boolean = false,
-    )
-
-    sealed class UiAction {
-        data object SignOutClicked : UiAction()
-    }
-
-    sealed class UiEffect {
-        data object GoToLoginScreen : UiEffect()
-    }
-}
