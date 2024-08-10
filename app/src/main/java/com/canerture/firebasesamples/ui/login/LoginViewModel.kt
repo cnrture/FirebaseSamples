@@ -29,6 +29,8 @@ class LoginViewModel @Inject constructor(
     private val _uiEffect by lazy { Channel<UiEffect>() }
     val uiEffect: Flow<UiEffect> by lazy { _uiEffect.receiveAsFlow() }
 
+    private var verificationId: String = ""
+
     init {
         isUserLoggedIn()
     }
@@ -39,6 +41,11 @@ class LoginViewModel @Inject constructor(
             is UiAction.SignUpClick -> signUp()
             is UiAction.ChangeEmail -> updateUiState { copy(email = uiAction.email) }
             is UiAction.ChangePassword -> updateUiState { copy(password = uiAction.password) }
+            is UiAction.ChangePhoneNumber -> updateUiState { copy(phoneNumber = uiAction.phoneNumber) }
+            is UiAction.ChangeVerifyCode -> updateUiState { copy(verifyCode = uiAction.verifyCode) }
+            is UiAction.SendCodeClick -> sendCode()
+            is UiAction.VerifyCodeClick -> verifyCode()
+            is UiAction.AnonymousClick -> anonymousSignIn()
         }
     }
 
@@ -74,6 +81,51 @@ class LoginViewModel @Inject constructor(
         }
     }
 
+    private fun sendCode() = viewModelScope.launch {
+        authRepository.sendVerificationCode(uiState.value.phoneNumber).collect { result ->
+            when (result) {
+                is Resource.Success -> {
+                    if (result.data.isEmpty()) {
+                        emitUiEffect(UiEffect.ShowToast("Success"))
+                    } else {
+                        verificationId = result.data
+                        emitUiEffect(UiEffect.ShowToast("Code sent"))
+                    }
+                }
+
+                is Resource.Error -> {
+                    emitUiEffect(UiEffect.ShowToast(result.exception.message.orEmpty()))
+                }
+            }
+        }
+    }
+
+    private fun verifyCode() = viewModelScope.launch {
+        when (val result = authRepository.verifyCode(verificationId, uiState.value.verifyCode)) {
+            is Resource.Success -> {
+                emitUiEffect(UiEffect.ShowToast(result.data))
+                emitUiEffect(UiEffect.GoToMainScreen)
+            }
+
+            is Resource.Error -> {
+                emitUiEffect(UiEffect.ShowToast(result.exception.message.orEmpty()))
+            }
+        }
+    }
+
+    private fun anonymousSignIn() = viewModelScope.launch {
+        when (val result = authRepository.signInAnonymously()) {
+            is Resource.Success -> {
+                emitUiEffect(UiEffect.ShowToast(result.data))
+                emitUiEffect(UiEffect.GoToMainScreen)
+            }
+
+            is Resource.Error -> {
+                emitUiEffect(UiEffect.ShowToast(result.exception.message.orEmpty()))
+            }
+        }
+    }
+
     private fun updateUiState(block: UiState.() -> UiState) {
         _uiState.update(block)
     }
@@ -88,6 +140,8 @@ object LoginContract {
         val isLoading: Boolean = false,
         val email: String = "",
         val password: String = "",
+        val phoneNumber: String = "",
+        val verifyCode: String = "",
     )
 
     sealed class UiAction {
@@ -95,6 +149,11 @@ object LoginContract {
         data object SignUpClick : UiAction()
         data class ChangeEmail(val email: String) : UiAction()
         data class ChangePassword(val password: String) : UiAction()
+        data class ChangePhoneNumber(val phoneNumber: String) : UiAction()
+        data class ChangeVerifyCode(val verifyCode: String) : UiAction()
+        data object SendCodeClick : UiAction()
+        data object VerifyCodeClick : UiAction()
+        data object AnonymousClick : UiAction()
     }
 
     sealed class UiEffect {

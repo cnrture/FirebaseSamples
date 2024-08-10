@@ -10,6 +10,7 @@ import androidx.navigation.compose.composable
 import com.canerture.firebasesamples.ui.login.LoginScreen
 import com.canerture.firebasesamples.ui.login.LoginViewModel
 import com.canerture.firebasesamples.ui.main.MainScreen
+import com.canerture.firebasesamples.ui.main.MainViewModel
 
 @Composable
 fun FirebaseNavigation(navController: NavHostController) {
@@ -30,7 +31,15 @@ fun FirebaseNavigation(navController: NavHostController) {
         }
 
         composable("main") {
-            MainScreen()
+            val viewModel: MainViewModel = hiltViewModel()
+            val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+            val uiEffect = viewModel.uiEffect
+            MainScreen(
+                uiState = uiState,
+                uiEffect = uiEffect,
+                onAction = viewModel::onAction,
+                onNavigateLoginScreen = { navController.navigate("login") }
+            )
         }
     }
 }

@@ -7,8 +7,10 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.material3.Button
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -66,6 +68,23 @@ fun LoginScreen(
             onSignInClick = { onAction(UiAction.SignInClick) },
             onSignUpClick = { onAction(UiAction.SignUpClick) },
         )
+
+        HorizontalDivider(modifier = Modifier.padding(vertical = 64.dp), thickness = 2.dp)
+
+        PhoneNumberContent(
+            phoneNumber = uiState.phoneNumber,
+            verifyCode = uiState.verifyCode,
+            onPhoneNumberChange = { onAction(UiAction.ChangePhoneNumber(it)) },
+            onVerifyCodeChange = { onAction(UiAction.ChangeVerifyCode(it)) },
+            onSendCodeClick = { onAction(UiAction.SendCodeClick) },
+            onVerifyCodeClick = { onAction(UiAction.VerifyCodeClick) },
+        )
+
+        HorizontalDivider(modifier = Modifier.padding(vertical = 64.dp), thickness = 2.dp)
+
+        AnonymouslyContent(
+            onSignInAnonymouslyClick = { onAction(UiAction.AnonymousClick) },
+        )
     }
 }
 
@@ -120,6 +139,93 @@ fun EmailAndPasswordContent(
         ) {
             Text("Sign Up")
         }
+    }
+}
+
+@Composable
+fun PhoneNumberContent(
+    phoneNumber: String,
+    verifyCode: String,
+    onPhoneNumberChange: (String) -> Unit,
+    onVerifyCodeChange: (String) -> Unit,
+    onSendCodeClick: () -> Unit,
+    onVerifyCodeClick: () -> Unit,
+) {
+    Text(
+        text = "Phone Number",
+        fontWeight = FontWeight.Bold,
+        fontSize = 24.sp,
+    )
+
+    Spacer(modifier = Modifier.height(16.dp))
+
+    Row(
+        horizontalArrangement = Arrangement.Center,
+    ) {
+        Column(
+            modifier = Modifier
+                .weight(1f)
+                .padding(start = 16.dp, end = 8.dp),
+            verticalArrangement = Arrangement.Center,
+            horizontalAlignment = Alignment.CenterHorizontally,
+        ) {
+            OutlinedTextField(
+                value = phoneNumber,
+                maxLines = 1,
+                placeholder = { Text("Phone Number") },
+                onValueChange = onPhoneNumberChange,
+            )
+
+            Spacer(modifier = Modifier.width(16.dp))
+
+            Button(
+                onClick = { onSendCodeClick() },
+                modifier = Modifier.padding(top = 16.dp)
+            ) {
+                Text("Send Code")
+            }
+        }
+
+        Column(
+            modifier = Modifier
+                .weight(1f)
+                .padding(start = 8.dp, end = 16.dp),
+            verticalArrangement = Arrangement.Center,
+            horizontalAlignment = Alignment.CenterHorizontally,
+        ) {
+            OutlinedTextField(
+                value = verifyCode,
+                maxLines = 1,
+                placeholder = { Text("Verify Code") },
+                onValueChange = onVerifyCodeChange,
+            )
+
+            Spacer(modifier = Modifier.width(16.dp))
+
+            Button(
+                onClick = { onVerifyCodeClick() },
+                modifier = Modifier.padding(top = 16.dp)
+            ) {
+                Text("Verify Code")
+            }
+        }
+    }
+}
+
+@Composable
+fun AnonymouslyContent(
+    onSignInAnonymouslyClick: () -> Unit,
+) {
+    Text(
+        text = "Anonymously",
+        fontWeight = FontWeight.Bold,
+        fontSize = 24.sp,
+    )
+
+    Spacer(modifier = Modifier.height(16.dp))
+
+    Button(onClick = { onSignInAnonymouslyClick() }) {
+        Text("Sign In Anonymously")
     }
 }
 
